@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MoveInSync Play Store Ratings</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root { --bg:#f7f8fa; --card:#fff; --text:#1c2430; --muted:#667085; --line:#e4e7ec; --accent:#2f6fed; --bad:#d92d20; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#12151a; --card:#1a1f27; --text:#e8ecf2; --muted:#9aa4b2; --line:#2a313c; } }
+  body { margin:0; font:15px/1.5 system-ui,sans-serif; background:var(--bg); color:var(--text); }
+  header { padding:20px 24px; display:flex; gap:16px; flex-wrap:wrap; align-items:center; justify-content:space-between; }
+  h1 { margin:0; font-size:22px; } h2 { margin:0 0 10px; font-size:16px; }
+  main { padding:0 24px 40px; display:grid; gap:16px; }
+  .kpis { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:12px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:10px; padding:16px; overflow-x:auto; }
+  .kpi b { display:block; font-size:28px; } .kpi span { color:var(--muted); font-size:13px; }
+  .grid2 { display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px; }
+  table { border-collapse:collapse; width:100%; font-size:13px; } th,td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); white-space:nowrap; }
+  th { color:var(--muted); font-weight:600; }
+  select,input,a.btn { background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:6px; padding:6px 10px; font:inherit; text-decoration:none; }
+  .alert { border-color:var(--bad); color:var(--bad); } .muted { color:var(--muted); font-size:13px; }
+  canvas { max-height:260px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>How are our Play Store ratings?</h1>
+  <div>
+    <select id="app"></select>
+    <input type="date" id="from"> <input type="date" id="to">
+    <a class="btn" id="dl" href="/api/report.md" download="weekly_summary.md">Download summary</a>
+  </div>
+</header>
+<main id="main"><div class="card">Loading... (if this stays empty, run <code>npm run pipeline</code> first)</div></main>
+<script>
+const $ = (id) => document.getElementById(id);
+const charts = {};
+function chart(id, cfg) { charts[id]?.destroy(); charts[id] = new Chart($(id), cfg); }
+const table = (rows, cols) => !rows.length ? '<p class="muted">None</p>' :
+  `<table><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr>${rows.map(r=>`<tr>${cols.map(c=>`<td>${r[c] ?? ''}</td>`).join('')}</tr>`).join('')}</table>`;
+const esc = (s) => String(s).replace(/[&<>]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+
+async function render() {
+  const qs = new URLSearchParams({ app: $('app').value, from: $('from').value, to: $('to').value });
+  $('dl').href = '/api/report.md?' + qs;
+  const d = await (await fetch('/api/summary?' + qs)).json();
+  if (d.empty) { $('main').innerHTML = '<div class="card">No data for this filter. Run <code>npm run pipeline</code>.</div>'; return; }
+  if (!$('app').options.length) {
+    $('app').innerHTML = '<option value="">All apps</option>' + d.apps.map(a => `<option>${a}</option>`).join('');
+  }
+  const o = d.overview, r = d.replies;
+  $('main').innerHTML = `
+  <div class="kpis">
+    <div class="card kpi"><b>${o.reviews.toLocaleString()}</b><span>Reviews analysed (${o.from} to ${o.to})</span></div>
+    <div class="card kpi"><b>${o.avg}</b><span>Average stars (sample)</span></div>
+    <div class="card kpi"><b>${o.pctLow}%</b><span>1-2 star share</span></div>
+    <div class="card kpi"><b>${r.replyRateLowPct}%</b><span>Dev reply rate on 1-2 star</span></div>
+  </div>
+  ${d.regressions.length ? `<div class="card alert"><h2>Possible version regressions</h2>${table(d.regressions, ['version','firstSeen','reviews','avgStars','deltaVsPrev','topTheme'])}</div>` : ''}
+  <div class="grid2">
+    <div class="card"><h2>Official rating over time</h2><canvas id="snap"></canvas><p class="muted" id="snapNote"></p></div>
+    <div class="card"><h2>Star distribution</h2><canvas id="dist"></canvas></div>
+    <div class="card"><h2>Who owns the problem? (1-2 star reviews)</h2><canvas id="owners"></canvas></div>
+    <div class="card"><h2>Monthly average stars</h2><canvas id="monthly"></canvas></div>
+  </div>
+  <div class="card"><h2>Top complaint themes</h2>${table(d.themes, ['theme','owner','reviews','shareOfAllPct','shareOfLowPct','avgStars','ratingDrag'])}
+    <p class="muted">ratingDrag = how much the average rises if that theme's reviews disappeared.</p></div>
+  <div class="card"><h2>App versions</h2>${table(d.versions, ['version','firstSeen','reviews','avgStars','pctLow','deltaVsPrev','topTheme'])}</div>
+  <div class="card"><h2>Read the reviews</h2>
+    <select id="theme">${d.themes.map(t=>`<option>${t.theme}</option>`).join('')}</select>
+    <ul id="quotes"></ul></div>`;
+
+  chart('dist', { type:'bar', data:{ labels:['1★','2★','3★','4★','5★'], datasets:[{ data:o.dist, backgroundColor:'#2f6fed' }] }, options:{ plugins:{legend:{display:false}} } });
+  chart('owners', { type:'doughnut', data:{ labels:Object.keys(d.owners), datasets:[{ data:Object.values(d.owners) }] } });
+  chart('monthly', { type:'line', data:{ labels:d.monthly.map(m=>m.month), datasets:[{ label:'Avg stars', data:d.monthly.map(m=>m.avgStars), borderColor:'#2f6fed', tension:.2 }] }, options:{ scales:{ y:{ min:1, max:5 } } } });
+  const snaps = d.snapshots.filter(s => !$('app').value || s.app === $('app').value);
+  if (snaps.length > 1) chart('snap', { type:'line', data:{ labels:snaps.map(s=>s.date), datasets:[{ label:'Official score', data:snaps.map(s=>s.score), borderColor:'#12b76a' }] } });
+  else $('snapNote').textContent = 'Snapshots build up each time the pipeline runs. Run it weekly to see the trend.';
+  const loadQuotes = async () => {
+    const q = await (await fetch('/api/quotes?' + new URLSearchParams({ app: $('app').value, from: $('from').value, to: $('to').value, theme: $('theme').value }))).json();
+    $('quotes').innerHTML = q.map(x => `<li><b>${x.stars}★</b> (${x.thumbsUp} 👍, v${esc(x.version)}): ${esc(x.text)}</li>`).join('') || '<li class="muted">No low-star reviews for this theme.</li>';
+  };
+  $('theme').onchange = loadQuotes; loadQuotes();
+}
+['app','from','to'].forEach(id => $(id).onchange = render);
+render();
+</script>
+</body>
+</html>
