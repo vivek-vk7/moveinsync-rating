@@ -1,45 +1,45 @@
 # MoveInSync Play Store: weekly summary
-Data: 2026-09-15 to 2026-10-10 | 215 reviews
+Data: 2026-09-14 to 2026-10-10 | 225 reviews
 
 **Average rating in sample:** 3.75 | **1-2 star share:** 30.7%
 
 ## Star distribution
-- 1 star: 60
-- 2 star: 6
-- 3 star: 1
-- 4 star: 8
-- 5 star: 140
+- 1 star: 62
+- 2 star: 7
+- 3 star: 2
+- 4 star: 9
+- 5 star: 145
 
 ## Top complaint themes (by share of 1-2 star reviews)
 | theme | owner | reviews | shareOfAllPct | shareOfLowPct | avgStars | ratingDrag |
 |---|---|---|---|---|---|---|
-| positive_or_other | No issue | 157 | 73 | 39.4 | 4.31 | -1.512 |
-| crash_performance | App fixable | 9 | 4.2 | 12.1 | 1.33 | 0.106 |
-| booking_failure | App fixable | 8 | 3.7 | 9.1 | 2 | 0.068 |
-| ui_ux | App fixable | 10 | 4.7 | 7.6 | 3.2 | 0.027 |
-| live_tracking | App fixable | 6 | 2.8 | 6.1 | 2.17 | 0.046 |
-| support_escalation | Mixed | 5 | 2.3 | 6.1 | 1.8 | 0.047 |
+| positive_or_other | No issue | 163 | 72.4 | 39.1 | 4.29 | -1.44 |
+| crash_performance | App fixable | 10 | 4.4 | 13 | 1.4 | 0.109 |
+| booking_failure | App fixable | 8 | 3.6 | 8.7 | 2 | 0.064 |
+| ui_ux | App fixable | 10 | 4.4 | 7.2 | 3.2 | 0.025 |
+| eta_pickup_time | Mixed | 7 | 3.1 | 5.8 | 2.57 | 0.038 |
+| live_tracking | App fixable | 8 | 3.6 | 5.8 | 2.88 | 0.032 |
 
 ## Who owns the problem (1-2 star reviews)
-- App fixable: 42.4%
-- No issue: 39.4%
-- Mixed: 10.6%
-- Operational: 7.6%
+- App fixable: 42%
+- No issue: 39.1%
+- Mixed: 11.6%
+- Operational: 7.2%
 
 ## Last 3 months
 | month | reviews | avgStars | pctLow |
 |---|---|---|---|
-| 2026-09 | 136 | 3.78 | 30.1 |
+| 2026-09 | 146 | 3.77 | 30.1 |
 | 2026-10 | 79 | 3.71 | 31.6 |
 
 ## Version regressions (avg stars dropped >= 0.3 vs previous version)
 | version | firstSeen | reviews | avgStars | deltaVsPrev | topTheme |
 |---|---|---|---|---|---|
-| 12.19.0 | 2026-09-21 | 103 | 3.59 | -0.31 | positive_or_other |
+| unknown | 2026-09-15 | 24 | 3.54 | -0.39 | positive_or_other |
 
 ## Developer replies
 - replyRateAllPct: 0.9
-- replyRateLowPct: 1.5
+- replyRateLowPct: 1.4
 - medianReplyHours: -23848.6
 
 ## Example complaints
@@ -56,4 +56,4 @@ Data: 2026-09-15 to 2026-10-10 | 215 reviews
 - (1★, 0 👍) your new update is a threat to person with medical condition. it just books you without informing if he's on waitlist or not. so annoying
 - (1★, 0 👍) 06-10-2026 even after booked the trip it keep sends the push notification that trip is not booked. old: Bring monthly view ,not just day view...
 
-## Official Play Store rating on 2026-10-12: NaN (NaN ratings)
+## Official Play Store rating on 2026-10-19: NaN (NaN ratings)
