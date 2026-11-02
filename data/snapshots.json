@@ -90,5 +90,28 @@
   "star3": 0,
   "star4": 0,
   "star5": 0
+ },
+ {
+  "date": "2026-11-02",
+  "app": "employee",
+  "score": 4.639785,
+  "ratings": 115727,
+  "reviews": 23753,
+  "installs": "1,000,000+",
+  "star1": 7424,
+  "star2": 881,
+  "star3": 1201,
+  "star4": 6937,
+  "star5": 99280
+ },
+ {
+  "date": "2026-11-02",
+  "app": "driver",
+  "installs": "10+",
+  "star1": 0,
+  "star2": 0,
+  "star3": 0,
+  "star4": 0,
+  "star5": 0
  }
 ]
